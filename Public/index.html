@@ -3,22 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>APK Detector</title>
-  <link rel="stylesheet" href="Public/style.css" />
+  <title>Fake APK Detector</title>
+
+  <!-- Correct path for CSS -->
+  <link rel="stylesheet" href="Public/Style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>🔍 APK Fake Detector</h1>
-    <p>Upload an APK to check if it's Safe or Fake</p>
+  <header>
+    <h1>Fake APK Detector</h1>
+  </header>
 
-    <form id="apkForm">
+  <main>
+    <div class="upload-section">
+      <p>Upload your APK file to check if it's fake or real:</p>
       <input type="file" id="apkFile" accept=".apk" />
-      <button type="submit">Check APK</button>
-    </form>
+      <button onclick="checkApk()">Check APK</button>
+    </div>
 
     <div id="result"></div>
-  </div>
+  </main>
 
-  <script src="Public/script.js"></script>
+  <!-- Correct path for JS -->
+  <script src="Public/Script.js"></script>
 </body>
 </html>
