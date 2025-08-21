@@ -1,0 +1,12 @@
+{
+  "name": "fake-apk-detector",
+  "version": "1.0.0",
+  "description": "A simple Fake APK Detector app",
+  "main": "Server.js",
+  "scripts": {
+    "start": "node Server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
