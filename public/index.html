@@ -27,6 +27,7 @@
       <button onclick="checkApk()">Check APK</button>
     </div>
 
+    <!-- Detection Result -->
     <div id="result"></div>
   </main>
 
@@ -51,6 +52,54 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    // Simulated APK detection function
+    function checkApk() {
+      const fileInput = document.getElementById("apkFile");
+      const resultBox = document.getElementById("result");
+
+      if (!fileInput.files.length) {
+        resultBox.style.display = "block";
+        resultBox.innerHTML = `<p style="color:#f87171; font-weight:bold;">⚠️ Please select an APK file first!</p>`;
+        return;
+      }
+
+      // Simulate random confidence score
+      const confidence = Math.floor(Math.random() * 100);
+
+      let status = "";
+      let color = "";
+
+      if (confidence > 70) {
+        status = "⚠️ Suspicious APK detected!";
+        color = "#f87171"; // red
+      } else {
+        status = "✅ Safe APK (Low Risk)";
+        color = "#34d399"; // green
+      }
+
+      resultBox.style.display = "block";
+      resultBox.innerHTML = `
+        <h2 style="color:${color}; text-shadow:0 0 10px ${color};">${status}</h2>
+        <p style="font-size:1.2rem; margin-top:10px;">
+          Detection Confidence: 
+          <span style="font-weight:bold; color:${color}; text-shadow:0 0 8px ${color};">
+            ${confidence}%
+          </span>
+        </p>
+      `;
+    }
+
+    // Modal handling
+    function showProfile() {
+      document.getElementById("profileModal").style.display = "flex";
+    }
+    function showLogin() {
+      document.getElementById("loginModal").style.display = "flex";
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+  </script>
 </body>
 </html>
