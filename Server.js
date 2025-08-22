@@ -70,6 +70,3 @@ app.listen(PORT, () => {
 });
 // Add at the top after other imports
 const path = require("path");
-
-// Serve static files (CSS, JS, images) from 'public' folder
-app.use(express.static(path.join(__dirname, "public")));
