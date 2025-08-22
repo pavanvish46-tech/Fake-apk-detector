@@ -3,6 +3,7 @@ const multer = require("multer");
 const ApkReader = require("apk-parser3");
 const cors = require("cors");
 const fs = require("fs");
+const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -67,3 +68,8 @@ app.post("/upload", upload.single("apkFile"), async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+// Add at the top after other imports
+const path = require("path");
+
+// Serve static files (CSS, JS, images) from 'public' folder
+app.use(express.static(path.join(__dirname, "public")));
