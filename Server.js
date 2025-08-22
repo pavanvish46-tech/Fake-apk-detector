@@ -3,14 +3,14 @@ const multer = require("multer");
 const ApkReader = require("apk-parser3");
 const cors = require("cors");
 const fs = require("fs");
-const path = require("path");
+const path = require("path"); // ✅ already imported here
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // serve frontend files
+app.use(express.static("public")); // ✅ serve frontend files
 
 // Multer setup for APK upload
 const upload = multer({ dest: "uploads/" });
@@ -68,5 +68,3 @@ app.post("/upload", upload.single("apkFile"), async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
-// Add at the top after other imports
-const path = require("path");
