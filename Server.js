@@ -3,9 +3,13 @@ const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
 const APK = require("apk-parser3");
+const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(express.json());
 
 // Serve frontend from /public
 app.use(express.static(path.join(__dirname, "public")));
@@ -16,14 +20,14 @@ const upload = multer({
     destination: (req, file, cb) => cb(null, "/tmp"),
     filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname)
   }),
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB cap
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
   fileFilter: (req, file, cb) => {
     if (file.originalname.toLowerCase().endsWith(".apk")) cb(null, true);
     else cb(new Error("Only .apk files are allowed"));
   }
 });
 
-// Risk feature weights (simple “ML-style” logistic scoring)
+// Risk feature weights
 const RISKY_PERMS = new Set([
   "SEND_SMS","READ_SMS","RECEIVE_SMS",
   "READ_CONTACTS","WRITE_CONTACTS",
@@ -39,29 +43,18 @@ const RISKY_PERMS = new Set([
 function sigmoid(x){ return 1/(1+Math.exp(-x)); }
 
 function scoreRisk(features) {
-  // weights (tuned heuristically)
-  const w = {
-    bias: -1.2,
-    riskyPerms: 0.55,
-    smallSize: 0.9,          // very small apks are suspicious
-    filenameFlag: 1.0,       // "mod"/"hack"/"bank" etc.
-    debuggable: 0.6
-  };
-
-  const z =
-    w.bias +
+  const w = { bias: -1.2, riskyPerms: 0.55, smallSize: 0.9, filenameFlag: 1.0, debuggable: 0.6 };
+  const z = w.bias +
     w.riskyPerms * features.riskyPermCount +
     w.smallSize * (features.isVerySmall ? 1 : 0) +
     w.filenameFlag * (features.filenameFlag ? 1 : 0) +
     w.debuggable * (features.debuggable ? 1 : 0);
-
-  return Math.round(sigmoid(z) * 100); // 0–100
+  return Math.round(sigmoid(z) * 100);
 }
 
 function pickContributors(features) {
   const reasons = [];
-  if (features.riskyPermCount > 0)
-    reasons.push(`Uses ${features.riskyPermCount} risky permission(s)`);
+  if (features.riskyPermCount > 0) reasons.push(`Uses ${features.riskyPermCount} risky permission(s)`);
   if (features.debuggable) reasons.push("App is debuggable");
   if (features.isVerySmall) reasons.push("Unusually small APK size");
   if (features.filenameFlag) reasons.push("Suspicious filename keywords");
@@ -74,24 +67,18 @@ app.post("/api/analyze", upload.single("apk"), async (req, res) => {
   const file = req.file;
   if (!file) return res.status(400).json({ error: "No APK uploaded" });
 
-  let manifest = null;
   let parsed = {};
   try {
     const reader = await APK.readFile(file.path);
-    manifest = await reader.getManifestInfo();
-
-    // Pull useful data defensively (apk-parser3 structures can vary by apk)
-    const pkg = manifest?.package ?? "unknown.package";
-    const versionName = manifest?.versionName ?? "unknown";
-    const appLabel = manifest?.application?.label ?? "Unknown App";
-    const debuggable = Boolean(manifest?.application?.debuggable);
-    const usesPermissions = (manifest?.usesPermissions || []).map(p =>
-      (p?.name || p)?.split(".").pop() // get last segment AND keep raw if simple
-    );
-
-    parsed = { pkg, versionName, appLabel, debuggable, usesPermissions };
-  } catch (e) {
-    // Fallback if manifest parse fails
+    const manifest = await reader.getManifestInfo();
+    parsed = {
+      pkg: manifest?.package ?? "unknown.package",
+      versionName: manifest?.versionName ?? "unknown",
+      appLabel: manifest?.application?.label ?? "Unknown App",
+      debuggable: Boolean(manifest?.application?.debuggable),
+      usesPermissions: (manifest?.usesPermissions || []).map(p => (p?.name || p).split(".").pop())
+    };
+  } catch {
     parsed = {
       pkg: "unknown.package",
       versionName: "unknown",
@@ -101,23 +88,16 @@ app.post("/api/analyze", upload.single("apk"), async (req, res) => {
     };
   }
 
-  // Build features for scoring
   const filename = file.originalname.toLowerCase();
   const filenameFlag = /(mod|hack|crack|premium|pro|bank|lite)/.test(filename);
   const sizeBytes = file.size || 0;
-  const isVerySmall = sizeBytes > 0 && sizeBytes < 300 * 1024; // <300KB
-
-  // Count risky permissions (map to last segment to match set)
-  const riskyPermCount = (parsed.usesPermissions || []).reduce((acc, p) => {
-    const key = String(p).toUpperCase();
-    return acc + (RISKY_PERMS.has(key) ? 1 : 0);
-  }, 0);
+  const isVerySmall = sizeBytes > 0 && sizeBytes < 300 * 1024;
+  const riskyPermCount = (parsed.usesPermissions || []).reduce((acc, p) => acc + (RISKY_PERMS.has(String(p).toUpperCase()) ? 1 : 0), 0);
 
   const features = { filenameFlag, isVerySmall, riskyPermCount, debuggable: parsed.debuggable };
   const riskScore = scoreRisk(features);
   const reasons = pickContributors(features);
 
-  // Clean up tmp file
   try { fs.unlink(file.path, () => {}); } catch {}
 
   return res.json({
@@ -133,51 +113,11 @@ app.post("/api/analyze", upload.single("apk"), async (req, res) => {
   });
 });
 
-// Fallback home route (serves your UI)
+// Fallback → serve index.html
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
-const express = require("express");
-const cors = require("cors");
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// Risk calculation function
-function calculateRisk(permissions) {
-  let score = 0;
-
-  const highRisk = ["SEND_SMS", "READ_SMS", "WRITE_SMS", "READ_CALL_LOG", "WRITE_CALL_LOG", "RECEIVE_BOOT_COMPLETED"];
-  const mediumRisk = ["READ_CONTACTS", "WRITE_CONTACTS", "READ_PHONE_STATE", "PROCESS_OUTGOING_CALLS"];
-  const lowRisk = ["INTERNET", "ACCESS_FINE_LOCATION", "CAMERA", "RECORD_AUDIO"];
-
-  permissions.forEach(p => {
-    if (highRisk.includes(p)) score += 30;
-    else if (mediumRisk.includes(p)) score += 20;
-    else if (lowRisk.includes(p)) score += 10;
-    else score += 5; // unknown → small risk
-  });
-
-  return Math.min(score, 100);
-}
-
-app.post("/analyze", (req, res) => {
-  const { appName, permissions } = req.body;
-
-  const riskScore = calculateRisk(permissions);
-
-  res.json({
-    appName: appName || "Unknown APK",
-    riskScore: riskScore,
-    verdict: riskScore > 70 ? "Likely Fake / Malicious" : riskScore > 40 ? "Suspicious" : "Safe Looking",
-    checkedPermissions: permissions
-  });
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
