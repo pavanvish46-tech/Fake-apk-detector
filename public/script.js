@@ -47,3 +47,24 @@ async function checkApk() {
     resultDiv.innerHTML = `<p style="color:#ff6b6b;">❌ ${e.message}</p>`;
   }
 }
+async function checkApk() {
+  // For demo, we mock permission list (later can parse real APK)
+  const fakePermissions = ["INTERNET", "READ_SMS", "CAMERA"];
+
+  const response = await fetch("https://your-backend-url.onrender.com/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      appName: "Demo Banking App",
+      permissions: fakePermissions
+    })
+  });
+
+  const data = await response.json();
+  document.getElementById("result").innerHTML = `
+    <h3>App Name: ${data.appName}</h3>
+    <p>Risk Score: <b>${data.riskScore}%</b></p>
+    <p>Verdict: ${data.verdict}</p>
+    <p><i>Permissions Checked:</i> ${data.checkedPermissions.join(", ")}</p>
+  `;
+}
