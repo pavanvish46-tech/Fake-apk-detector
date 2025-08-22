@@ -4,22 +4,53 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fake APK Detector</title>
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Navbar -->
   <header>
-    <h1>Fake APK Detector</h1>
+    <div class="logo">🔍 APK Detector</div>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#" onclick="showProfile()">Profile</a>
+      <a href="#" onclick="showLogin()">Login</a>
+    </nav>
   </header>
 
+  <!-- Main Content -->
   <main>
+    <h1>Detect Fake Banking APKs</h1>
+    <p>Upload your APK to analyze permissions & detect fraud risk.</p>
+
     <div class="upload-section">
-      <p>Upload your APK file to check if it's fake or real:</p>
       <input type="file" id="apkFile" accept=".apk" />
       <button onclick="checkApk()">Check APK</button>
     </div>
+
     <div id="result"></div>
   </main>
 
-  <script src="/script.js"></script>
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('profileModal')">&times;</span>
+      <h2>Your Profile</h2>
+      <p><b>Name:</b> Guest User</p>
+      <p><b>Email:</b> guest@example.com</p>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('loginModal')">&times;</span>
+      <h2>Login</h2>
+      <input type="text" placeholder="Email" />
+      <input type="password" placeholder="Password" />
+      <button>Login</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
