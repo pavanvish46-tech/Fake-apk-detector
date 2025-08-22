@@ -1,68 +1,69 @@
 const express = require("express");
 const multer = require("multer");
+const ApkReader = require("apk-parser3");
 const cors = require("cors");
-const ApkReader = require("adbkit-apkreader"); // parses APK
 const fs = require("fs");
-const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // serve frontend
+app.use(express.static("public")); // serve frontend files
 
-// File upload storage
+// Multer setup for APK upload
 const upload = multer({ dest: "uploads/" });
 
-// Risky permissions list
-const riskyPermissions = [
-  "android.permission.SEND_SMS",
-  "android.permission.READ_SMS",
-  "android.permission.CALL_PHONE",
-  "android.permission.RECEIVE_BOOT_COMPLETED",
-  "android.permission.WRITE_SETTINGS",
-  "android.permission.READ_CONTACTS",
-  "android.permission.RECORD_AUDIO",
-  "android.permission.CAMERA",
-  "android.permission.ACCESS_FINE_LOCATION"
-];
-
-// API endpoint
-app.post("/api/analyze", upload.single("apk"), async (req, res) => {
+// Upload endpoint
+app.post("/upload", upload.single("apkFile"), async (req, res) => {
   try {
-    if (!req.file) return res.json({ error: "No APK uploaded" });
+    const filePath = req.file.path;
 
-    const reader = await ApkReader.open(req.file.path);
+    // Parse the APK
+    const reader = await ApkReader.open(filePath);
     const manifest = await reader.readManifest();
 
-    let dangerous = 0;
-    let total = manifest.usesPermissions?.length || 0;
+    // Example scoring logic (fake detector)
+    let score = 0;
+    let reasons = [];
 
-    if (total > 0) {
-      manifest.usesPermissions.forEach(p => {
-        if (riskyPermissions.includes(p.name)) dangerous++;
-      });
+    if (!manifest.package) {
+      score += 50;
+      reasons.push("Missing package name");
     }
 
-    let probability = total > 0 ? Math.min(100, (dangerous / total) * 100) : 0;
+    if (manifest.usesPermissions) {
+      const perms = manifest.usesPermissions.map((p) => p.name).join(", ");
+      if (perms.includes("SEND_SMS") || perms.includes("READ_SMS")) {
+        score += 30;
+        reasons.push("Suspicious SMS permissions");
+      }
+    }
 
-    // Cleanup temp file
-    fs.unlinkSync(req.file.path);
+    if (manifest.versionName && manifest.versionName.includes("beta")) {
+      score += 20;
+      reasons.push("App in beta version");
+    }
+
+    // Fake confidence %
+    const confidence = Math.min(100, score);
+
+    // Clean up file
+    fs.unlinkSync(filePath);
 
     res.json({
       package: manifest.package,
-      versionName: manifest.versionName,
-      versionCode: manifest.versionCode,
-      permissions: manifest.usesPermissions,
-      fakeProbability: `${probability.toFixed(1)}%`
+      version: manifest.versionName,
+      label: manifest.application?.label,
+      confidence,
+      reasons,
     });
   } catch (err) {
-    console.error(err);
-    res.json({ error: "Failed to analyze APK" });
+    console.error("Error parsing APK:", err);
+    res.status(500).json({ error: "Failed to analyze APK" });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
