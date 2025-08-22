@@ -141,3 +141,43 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
 });
+const express = require("express");
+const cors = require("cors");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Risk calculation function
+function calculateRisk(permissions) {
+  let score = 0;
+
+  const highRisk = ["SEND_SMS", "READ_SMS", "WRITE_SMS", "READ_CALL_LOG", "WRITE_CALL_LOG", "RECEIVE_BOOT_COMPLETED"];
+  const mediumRisk = ["READ_CONTACTS", "WRITE_CONTACTS", "READ_PHONE_STATE", "PROCESS_OUTGOING_CALLS"];
+  const lowRisk = ["INTERNET", "ACCESS_FINE_LOCATION", "CAMERA", "RECORD_AUDIO"];
+
+  permissions.forEach(p => {
+    if (highRisk.includes(p)) score += 30;
+    else if (mediumRisk.includes(p)) score += 20;
+    else if (lowRisk.includes(p)) score += 10;
+    else score += 5; // unknown → small risk
+  });
+
+  return Math.min(score, 100);
+}
+
+app.post("/analyze", (req, res) => {
+  const { appName, permissions } = req.body;
+
+  const riskScore = calculateRisk(permissions);
+
+  res.json({
+    appName: appName || "Unknown APK",
+    riskScore: riskScore,
+    verdict: riskScore > 70 ? "Likely Fake / Malicious" : riskScore > 40 ? "Suspicious" : "Safe Looking",
+    checkedPermissions: permissions
+  });
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
