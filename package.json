@@ -1,13 +1,13 @@
 {
   "name": "fake-apk-detector",
   "version": "1.0.0",
-  "description": "Fake Banking APK Detector with permission-based scoring",
-  "main": "Server.js",
+  "description": "Fake Banking APK Detector with backend scoring",
+  "main": "server.js",
   "scripts": {
-    "start": "node Server.js"
+    "start": "node server.js"
   },
   "dependencies": {
-    "apk-parser3": "^1.0.7",
+    "apk-parser3": "1.0.6",
     "express": "^4.18.2",
     "multer": "^1.4.5-lts.1",
     "cors": "^2.8.5"
