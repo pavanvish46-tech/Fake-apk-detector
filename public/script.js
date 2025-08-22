@@ -1,70 +1,56 @@
-function el(id){ return document.getElementById(id); }
-
 async function checkApk() {
-  const fileInput = el("apkFile");
-  const resultDiv = el("result");
-  resultDiv.innerHTML = "";
+  const fileInput = document.getElementById("apkFile");
+  const resultDiv = document.getElementById("result");
 
-  if (!fileInput.files.length) {
-    resultDiv.innerHTML = "<p style='color:orange;'>⚠️ Please upload an APK file!</p>";
+  if (fileInput.files.length === 0) {
+    resultDiv.innerHTML = `<p style="color:red;">⚠️ Please select an APK file!</p>`;
     return;
   }
 
-  const fd = new FormData();
-  fd.append("apk", fileInput.files[0]);
+  const formData = new FormData();
+  formData.append("apk", fileInput.files[0]);
 
-  resultDiv.innerHTML = "⏳ Analyzing APK…";
+  resultDiv.innerHTML = `<p>⏳ Analyzing APK...</p>`;
 
   try {
-    const res = await fetch("/api/analyze", {
+    const response = await fetch("/api/analyze", {
       method: "POST",
-      body: fd
+      body: formData
     });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Server error: ${res.status}`);
+
+    const data = await response.json();
+
+    if (data.error) {
+      resultDiv.innerHTML = `<p style="color:red;">❌ ${data.error}</p>`;
+    } else {
+      resultDiv.innerHTML = `
+        <div style="padding:15px; border-radius:10px; background:#f4f4f4;">
+          <h3>📱 APK Analysis Report</h3>
+          <p><strong>Package:</strong> ${data.package}</p>
+          <p><strong>Version:</strong> ${data.versionName} (Code: ${data.versionCode})</p>
+          <p><strong>Fake Probability:</strong> 
+            <span style="font-size:18px; font-weight:bold; color:${parseFloat(data.fakeProbability) > 60 ? 'red' : 'green'};">
+              ${data.fakeProbability}
+            </span>
+          </p>
+        </div>
+      `;
     }
-    const data = await res.json();
-
-    // Color by risk
-    let color = "limegreen";
-    if (data.riskScore >= 60) color = "red";
-    else if (data.riskScore >= 40) color = "gold";
-
-    const perms = (data.permissions || []).join(", ") || "—";
-
-    resultDiv.innerHTML = `
-      <div style="line-height:1.6">
-        <p><strong>App:</strong> ${data.appName} (${data.package})</p>
-        <p><strong>Version:</strong> ${data.version} • <strong>Size:</strong> ${data.sizeKB} KB</p>
-        <p><strong>Debuggable:</strong> ${data.debuggable ? "Yes" : "No"}</p>
-        <p><strong>Permissions:</strong> ${perms}</p>
-        <p><strong>Risk Score:</strong> <span style="color:${color}; font-weight:700;">${data.riskScore}/100</span> — ${data.verdict}</p>
-        <p><strong>Why:</strong> ${data.reasons.join("; ")}</p>
-      </div>
-    `;
-  } catch (e) {
-    resultDiv.innerHTML = `<p style="color:#ff6b6b;">❌ ${e.message}</p>`;
+  } catch (error) {
+    console.error(error);
+    resultDiv.innerHTML = `<p style="color:red;">⚠️ Error analyzing APK</p>`;
   }
 }
-async function checkApk() {
-  // For demo, we mock permission list (later can parse real APK)
-  const fakePermissions = ["INTERNET", "READ_SMS", "CAMERA"];
 
-  const response = await fetch("https://your-backend-url.onrender.com/analyze", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      appName: "Demo Banking App",
-      permissions: fakePermissions
-    })
-  });
+// Profile & Login Modals
+function showProfile() {
+  document.getElementById("profileModal").style.display = "block";
+}
 
-  const data = await response.json();
-  document.getElementById("result").innerHTML = `
-    <h3>App Name: ${data.appName}</h3>
-    <p>Risk Score: <b>${data.riskScore}%</b></p>
-    <p>Verdict: ${data.verdict}</p>
-    <p><i>Permissions Checked:</i> ${data.checkedPermissions.join(", ")}</p>
-  `;
+function showLogin() {
+  document.getElementById("loginModal").style.display = "block";
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = "none";
 }
