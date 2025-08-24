@@ -1,121 +1,118 @@
-/* ===== Reset ===== */
+/* General Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
-  color: #fff;
-  min-height: 100vh;
+  background: #0d1117;
+  color: #e6edf3;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
 }
 
-/* ===== Navbar ===== */
+/* Header */
 header {
   width: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 15px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  padding: 1rem 2rem;
+  background: rgba(20, 20, 35, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.logo {
+header .logo {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #00e6ff;
+  color: #3b82f6;
+  text-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
 }
 
-nav a {
-  margin-left: 20px;
+header nav a {
+  margin-left: 1.5rem;
   text-decoration: none;
-  color: #fff;
+  color: #e6edf3;
   font-weight: 500;
   transition: 0.3s;
 }
 
-nav a:hover {
-  color: #00e6ff;
-  text-shadow: 0 0 5px #00e6ff;
+header nav a:hover {
+  color: #3b82f6;
+  text-shadow: 0 0 5px #3b82f6;
 }
 
-/* ===== Main Content ===== */
+/* Main Content */
 main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 40px 20px;
   text-align: center;
+  margin-top: 4rem;
 }
 
 main h1 {
-  font-size: 2rem;
-  margin-bottom: 10px;
-  color: #00e6ff;
+  font-size: 2.5rem;
+  color: #3b82f6;
+  text-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
+  margin-bottom: 1rem;
 }
 
 main p {
-  font-size: 1rem;
-  margin-bottom: 30px;
-  color: #ddd;
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #9ca3af;
 }
 
+/* Upload Section */
 .upload-section {
-  background: rgba(0, 0, 0, 0.7);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.5);
+  background: #161b22;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  display: inline-block;
 }
 
 .upload-section input[type="file"] {
-  margin: 10px 0;
-  padding: 8px;
-  background: #222;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  background: #0d1117;
+  border: 1px solid #3b82f6;
+  border-radius: 0.5rem;
+  color: #e6edf3;
 }
 
 .upload-section button {
-  margin-top: 10px;
-  padding: 10px 20px;
+  padding: 0.7rem 2rem;
   border: none;
-  background: #00e6ff;
-  color: #000;
-  font-weight: bold;
-  border-radius: 6px;
+  border-radius: 0.5rem;
+  background: #3b82f6;
+  color: white;
+  font-size: 1rem;
   cursor: pointer;
   transition: 0.3s;
+  box-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
 }
 
 .upload-section button:hover {
-  background: #00b3cc;
-  transform: scale(1.05);
+  background: #2563eb;
+  box-shadow: 0 0 15px #2563eb, 0 0 30px #2563eb;
 }
 
-/* ===== Detection Result ===== */
+/* Result Box */
 #result {
-  margin-top: 25px;
-  padding: 15px;
-  border-radius: 10px;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #1f2937;
+  border-radius: 1rem;
   display: none;
-  background: #111;
-  text-align: center;
-  font-size: 1rem;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
 }
 
-/* ===== Modal ===== */
+/* Modals */
 .modal {
   display: none;
   position: fixed;
@@ -123,67 +120,38 @@ main p {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.7);
   justify-content: center;
   align-items: center;
-  z-index: 200;
 }
 
 .modal-content {
-  background: #222;
-  padding: 30px;
-  border-radius: 12px;
-  width: 300px;
+  background: #161b22;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
   text-align: center;
-  color: #fff;
-  position: relative;
-  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.6);
+  width: 90%;
+  max-width: 400px;
 }
 
 .modal-content h2 {
-  color: #00e6ff;
-  margin-bottom: 15px;
+  color: #3b82f6;
+  text-shadow: 0 0 10px #3b82f6;
+  margin-bottom: 1rem;
 }
 
 .modal-content input {
-  display: block;
   width: 100%;
-  margin: 10px 0;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-  outline: none;
-  background: #333;
-  color: #fff;
+  margin: 0.5rem 0;
+  padding: 0.7rem;
+  border: 1px solid #3b82f6;
+  border-radius: 0.5rem;
+  background: #0d1117;
+  color: #e6edf3;
 }
 
 .modal-content button {
-  margin-top: 10px;
-  padding: 10px;
+  margin-top: 1rem;
   width: 100%;
-  border: none;
-  border-radius: 6px;
-  background: #00e6ff;
-  color: #000;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.modal-content button:hover {
-  background: #00b3cc;
-}
-
-.close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 24px;
-  cursor: pointer;
-  color: #fff;
-  transition: 0.3s;
-}
-
-.close:hover {
-  color: #f87171;
 }
