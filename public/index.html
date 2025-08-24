@@ -1,105 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fake APK Detector</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Navbar -->
-  <header>
-    <div class="logo">🔍 APK Detector</div>
-    <nav>
-      <a href="#">Home</a>
-      <a href="#" onclick="showProfile()">Profile</a>
-      <a href="#" onclick="showLogin()">Login</a>
-    </nav>
-  </header>
+  <div class="container">
+    <h1>🚀 Fake APK Detector</h1>
+    
+    <div id="upload-section">
+      <label for="userId">Enter User ID (unique):</label>
+      <input type="text" id="userId" placeholder="e.g. guest123" required>
 
-  <!-- Main Content -->
-  <main>
-    <h1>Detect Fake Banking APKs</h1>
-    <p>Upload your APK to analyze permissions & detect fraud risk.</p>
+      <label for="apkFile">Upload APK:</label>
+      <input type="file" id="apkFile" accept=".apk" required>
 
-    <div class="upload-section">
-      <input type="file" id="apkFile" accept=".apk" />
-      <button onclick="checkApk()">Check APK</button>
+      <button id="uploadBtn">Check APK</button>
     </div>
 
-    <!-- Detection Result -->
-    <div id="result"></div>
-  </main>
-
-  <!-- Profile Modal -->
-  <div id="profileModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('profileModal')">&times;</span>
-      <h2>Your Profile</h2>
-      <p><b>Name:</b> Guest User</p>
-      <p><b>Email:</b> guest@example.com</p>
+    <div id="result" class="hidden">
+      <h2>📊 Analysis Result</h2>
+      <p><strong>Package:</strong> <span id="package"></span></p>
+      <p><strong>Version:</strong> <span id="version"></span></p>
+      <p><strong>Label:</strong> <span id="label"></span></p>
+      <p><strong>Confidence (Fake %):</strong> <span id="confidence"></span></p>
+      <p><strong>Reasons:</strong> <span id="reasons"></span></p>
+      <p><strong>Status:</strong> <span id="status"></span></p>
     </div>
   </div>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('loginModal')">&times;</span>
-      <h2>Login</h2>
-      <input type="text" placeholder="Email" />
-      <input type="password" placeholder="Password" />
-      <button>Login</button>
-    </div>
-  </div>
-
-  <script>
-    // Simulated APK detection function
-    function checkApk() {
-      const fileInput = document.getElementById("apkFile");
-      const resultBox = document.getElementById("result");
-
-      if (!fileInput.files.length) {
-        resultBox.style.display = "block";
-        resultBox.innerHTML = `<p style="color:#f87171; font-weight:bold;">⚠️ Please select an APK file first!</p>`;
-        return;
-      }
-
-      // Simulate random confidence score
-      const confidence = Math.floor(Math.random() * 100);
-
-      let status = "";
-      let color = "";
-
-      if (confidence > 70) {
-        status = "⚠️ Suspicious APK detected!";
-        color = "#f87171"; // red
-      } else {
-        status = "✅ Safe APK (Low Risk)";
-        color = "#34d399"; // green
-      }
-
-      resultBox.style.display = "block";
-      resultBox.innerHTML = `
-        <h2 style="color:${color}; text-shadow:0 0 10px ${color};">${status}</h2>
-        <p style="font-size:1.2rem; margin-top:10px;">
-          Detection Confidence: 
-          <span style="font-weight:bold; color:${color}; text-shadow:0 0 8px ${color};">
-            ${confidence}%
-          </span>
-        </p>
-      `;
-    }
-
-    // Modal handling
-    function showProfile() {
-      document.getElementById("profileModal").style.display = "flex";
-    }
-    function showLogin() {
-      document.getElementById("loginModal").style.display = "flex";
-    }
-    function closeModal(id) {
-      document.getElementById(id).style.display = "none";
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
