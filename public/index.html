@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fake APK Detector</title>   
+  <title>Fake APK Detector</title>
+  
       
 </head>
 <body>
@@ -74,96 +75,6 @@
           </div>
         `;
       }, 2000); // Simulate scan delay
-    }
-  </script>
-</body>
-</html>      <img id="userPhoto" src="" alt="profile"/>
-      <h3 id="userName"></h3>
-      <p id="userEmail"></p>
-    </div>
-
-    <div class="upload-section">
-      <input type="file" id="apkFile" accept=".apk" />
-      <button onclick="checkApk()">Check APK</button>
-    </div>
-
-    <div class="loader" id="loader"></div>
-    <div id="result"></div>
-  </main>
-
-  <script>
-    // Firebase Config (apna khud ka config lagana hoga)
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    // Login with Google
-    function login(){
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then(result=>{
-          const user = result.user;
-          document.getElementById("userName").innerText = user.displayName;
-          document.getElementById("userEmail").innerText = user.email;
-          document.getElementById("userPhoto").src = user.photoURL;
-          document.getElementById("profile").style.display="block";
-          document.querySelector("button[onclick='login()']").style.display="none";
-          document.getElementById("logoutBtn").style.display="inline-block";
-        })
-        .catch(error=>alert(error.message));
-    }
-
-    // Logout
-    function logout(){
-      auth.signOut().then(()=>{
-        document.getElementById("profile").style.display="none";
-        document.querySelector("button[onclick='login()']").style.display="inline-block";
-        document.getElementById("logoutBtn").style.display="none";
-      });
-    }
-
-    // APK Check Simulation (same as before)
-    function checkApk() {
-      const fileInput = document.getElementById("apkFile");
-      const loader = document.getElementById("loader");
-      const resultBox = document.getElementById("result");
-
-      if (!fileInput.files.length) {
-        alert("⚠️ Please select an APK file first!");
-        return;
-      }
-
-      const file = fileInput.files[0];
-
-      loader.style.display = "block";
-      resultBox.style.display = "none";
-
-      setTimeout(() => {
-        loader.style.display = "none";
-
-        const confidence = Math.floor(Math.random() * 100);
-        let status = confidence > 70 ? "⚠️ Suspicious APK detected!" : "✅ Safe APK (Low Risk)";
-        let color = confidence > 70 ? "#f87171" : "#34d399";
-
-        resultBox.style.display = "block";
-        resultBox.style.background = "rgba(255,255,255,0.1)";
-        resultBox.innerHTML = `
-          <h2 style="color:${color};">${status}</h2>
-          <p><b>File:</b> ${file.name} (${(file.size/1024).toFixed(2)} KB)</p>
-          <div class="progress">
-            <div class="progress-bar" style="background:${color}; width:${confidence}%;">
-              ${confidence}%
-            </div>
-          </div>
-        `;
-      }, 2000);
     }
   </script>
 </body>
