@@ -83,3 +83,6 @@ app.post("/upload/:userId", upload.single("apkFile"), async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+app.get("/", (req, res) => {
+  res.send("✅ APK Detector Backend is Running!");
+});
