@@ -7,7 +7,7 @@
       margin: 0;
       padding: 0;
       background: #1e293b;
-      color: white;
+      color: #e6edf3;
       text-align: center;
     }
     header {
@@ -22,8 +22,8 @@
     header .logo {
       font-size: 1.5rem;
       font-weight: bold;
-      color: #1e293b;
-       text-shadow: 0 0 6px #1e293b, 0 0 12px #1e293b;
+      color: #3b82f6;
+       text-shadow: 0 0 6px #3b82f6, 0 0 12px #3b82f6;
     
     }
     header nav a {
@@ -42,8 +42,8 @@
     h1 {
       font-size: 2rem;
       margin-bottom: 0.5rem;
-    color: #1e293b;
-    text-shadow: 0 0 6px #1e293b, 0 0 12px #1e293b;
+    color: #3b82f6;
+    text-shadow: 0 0 6px #3b82f6, 0 0 12px #3b82f6;
     }
     p {
       margin-bottom: 1.5rem;
