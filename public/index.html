@@ -2,35 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fake APK Detector</title>
-  <link rel="stylesheet" href="style.css"/>
+  <title>APK Detector</title>
 </head>
 <body>
-  <div class="container">
-    <h1>🚀 Fake APK Detector</h1>
-    
-    <div id="upload-section">
-      <label for="userId">Enter User ID (unique):</label>
-      <input type="text" id="userId" placeholder="e.g. guest123" required>
+  <h2>🚀 Fake Banking APK Detector</h2>
 
-      <label for="apkFile">Upload APK:</label>
-      <input type="file" id="apkFile" accept=".apk" required>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="apkFile" accept=".apk" required />
+    <button type="submit">Upload & Analyze</button>
+  </form>
 
-      <button id="uploadBtn">Check APK</button>
-    </div>
+  <pre id="result"></pre>
 
-    <div id="result" class="hidden">
-      <h2>📊 Analysis Result</h2>
-      <p><strong>Package:</strong> <span id="package"></span></p>
-      <p><strong>Version:</strong> <span id="version"></span></p>
-      <p><strong>Label:</strong> <span id="label"></span></p>
-      <p><strong>Confidence (Fake %):</strong> <span id="confidence"></span></p>
-      <p><strong>Reasons:</strong> <span id="reasons"></span></p>
-      <p><strong>Status:</strong> <span id="status"></span></p>
-    </div>
-  </div>
+  <script>
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
 
-  <script src="script.js"/></script>
+      // userId fix rakh lo (e.g. "pawan123")
+      const res = await fetch("https://apk-detector-2.onrender.com/upload/pawan123", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+    });
+  </script>
 </body>
 </html>
