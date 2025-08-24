@@ -1,56 +1,46 @@
-async function checkApk() {
+document.getElementById("uploadBtn").addEventListener("click", async () => {
+  const userId = document.getElementById("userId").value.trim();
   const fileInput = document.getElementById("apkFile");
   const resultDiv = document.getElementById("result");
 
+  if (!userId) {
+    alert("⚠️ Please enter a User ID");
+    return;
+  }
+
   if (fileInput.files.length === 0) {
-    resultDiv.innerHTML = `<p style="color:red;">⚠️ Please select an APK file!</p>`;
+    alert("⚠️ Please select an APK file");
     return;
   }
 
   const formData = new FormData();
-  formData.append("apk", fileInput.files[0]);
-
-  resultDiv.innerHTML = `<p>⏳ Analyzing APK...</p>`;
+  formData.append("apkFile", fileInput.files[0]);
 
   try {
-    const response = await fetch("/api/analyze", {
+    const response = await fetch(`http://localhost:5000/upload/${userId}`, {
       method: "POST",
-      body: formData
+      body: formData,
     });
 
     const data = await response.json();
 
-    if (data.error) {
-      resultDiv.innerHTML = `<p style="color:red;">❌ ${data.error}</p>`;
-    } else {
-      resultDiv.innerHTML = `
-        <div style="padding:15px; border-radius:10px; background:#f4f4f4;">
-          <h3>📱 APK Analysis Report</h3>
-          <p><strong>Package:</strong> ${data.package}</p>
-          <p><strong>Version:</strong> ${data.versionName} (Code: ${data.versionCode})</p>
-          <p><strong>Fake Probability:</strong> 
-            <span style="font-size:18px; font-weight:bold; color:${parseFloat(data.fakeProbability) > 60 ? 'red' : 'green'};">
-              ${data.fakeProbability}
-            </span>
-          </p>
-        </div>
-      `;
+    if (!response.ok) {
+      // ❌ Already used check
+      alert(data.message || "Something went wrong");
+      return;
     }
+
+    // ✅ Show result
+    document.getElementById("package").textContent = data.package || "N/A";
+    document.getElementById("version").textContent = data.version || "N/A";
+    document.getElementById("label").textContent = data.label || "N/A";
+    document.getElementById("confidence").textContent = data.confidence + "%";
+    document.getElementById("reasons").textContent = data.reasons.join(", ") || "None";
+    document.getElementById("status").textContent = data.message;
+
+    resultDiv.classList.remove("hidden");
   } catch (error) {
-    console.error(error);
-    resultDiv.innerHTML = `<p style="color:red;">⚠️ Error analyzing APK</p>`;
+    console.error("Error uploading APK:", error);
+    alert("❌ Failed to upload APK");
   }
-}
-
-// Profile & Login Modals
-function showProfile() {
-  document.getElementById("profileModal").style.display = "block";
-}
-
-function showLogin() {
-  document.getElementById("loginModal").style.display = "block";
-}
-
-function closeModal(id) {
-  document.getElementById(id).style.display = "none";
-}
+});
