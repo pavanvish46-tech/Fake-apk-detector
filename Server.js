@@ -3,21 +3,31 @@ const multer = require("multer");
 const ApkReader = require("apk-parser3");
 const cors = require("cors");
 const fs = require("fs");
-const path = require("path"); // ✅ already imported here
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // ✅ serve frontend files
+
+// Temporary in-memory DB (later you can use MongoDB)
+const userChecks = new Map(); // { userId: true/false }
 
 // Multer setup for APK upload
 const upload = multer({ dest: "uploads/" });
 
 // Upload endpoint
-app.post("/upload", upload.single("apkFile"), async (req, res) => {
+app.post("/upload/:userId", upload.single("apkFile"), async (req, res) => {
   try {
+    const userId = req.params.userId;
+
+    // ❌ Already checked
+    if (userChecks.get(userId)) {
+      return res.status(403).json({
+        message: "❌ You have already checked an APK. Only 1 check allowed.",
+      });
+    }
+
     const filePath = req.file.path;
 
     // Parse the APK
@@ -41,7 +51,7 @@ app.post("/upload", upload.single("apkFile"), async (req, res) => {
       }
     }
 
-    if (manifest.versionName && manifest.versionName.includes("beta")) {
+    if (manifest.versionName && manifest.versionName.toLowerCase().includes("beta")) {
       score += 20;
       reasons.push("App in beta version");
     }
@@ -52,12 +62,17 @@ app.post("/upload", upload.single("apkFile"), async (req, res) => {
     // Clean up file
     fs.unlinkSync(filePath);
 
+    // ✅ Mark this user as "already checked"
+    userChecks.set(userId, true);
+
+    // Send response
     res.json({
       package: manifest.package,
       version: manifest.versionName,
       label: manifest.application?.label,
       confidence,
       reasons,
+      message: "✅ APK analyzed successfully (1-time check used).",
     });
   } catch (err) {
     console.error("Error parsing APK:", err);
