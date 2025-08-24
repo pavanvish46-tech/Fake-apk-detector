@@ -4,11 +4,12 @@ const ApkReader = require("apk-parser3");
 const cors = require("cors");
 const fs = require("fs");
 
-const app = express();
+const app = express(); // ✅ pehle define
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static("public")); // ✅ ab sahi jagah
 
 // Temporary in-memory DB (later you can use MongoDB)
 const userChecks = new Map(); // { userId: true/false }
@@ -80,9 +81,10 @@ app.post("/upload/:userId", upload.single("apkFile"), async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
 app.get("/", (req, res) => {
   res.send("✅ APK Detector Backend is Running!");
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
