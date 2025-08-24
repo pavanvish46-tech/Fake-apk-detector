@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Fake Banking APK Detector</title>
-  <link rel="stylesheet" href="style.css">
+  <title>🚀 Fake Banking APK Detector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  
+      
 </head>
 <body>
   <div class="container">
@@ -14,9 +20,40 @@
       <button type="submit">Upload & Analyze</button>
     </form>
 
-    <pre id="result"></pre>
+    <pre id="result">⚡ Upload an APK file to analyze...</pre>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    const form = document.getElementById("uploadForm");
+    const result = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fileInput = form.querySelector("input[type=file]");
+      if (!fileInput.files.length) return;
+
+      const formData = new FormData();
+      formData.append("apkFile", fileInput.files[0]);
+
+      result.textContent = "🔍 Analyzing APK... Please wait.";
+      result.classList.add("loading");
+
+      try {
+        // Replace with your backend API endpoint
+        const response = await fetch("http://localhost:5000/analyze", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+        result.classList.remove("loading");
+        result.textContent = "✅ Analysis Result:\n\n" + JSON.stringify(data, null, 2);
+
+      } catch (err) {
+        result.classList.remove("loading");
+        result.textContent = "❌ Error connecting to server:\n" + err.message;
+      }
+    });
+  </script>
 </body>
 </html>
