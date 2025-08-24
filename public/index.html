@@ -2,32 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>APK Detector</title>
+  <title>Fake Banking APK Detector</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>🚀 Fake Banking APK Detector</h2>
+  <div class="container">
+    <h2>🚀 Fake Banking APK Detector</h2>
 
-  <form id="uploadForm" enctype="multipart/form-data">
-    <input type="file" name="apkFile" accept=".apk" required />
-    <button type="submit">Upload & Analyze</button>
-  </form>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" name="apkFile" accept=".apk" required />
+      <button type="submit">Upload & Analyze</button>
+    </form>
 
-  <pre id="result"></pre>
+    <pre id="result"></pre>
+  </div>
 
-  <script>
-    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-
-      // userId fix rakh lo (e.g. "pawan123")
-      const res = await fetch("https://apk-detector-2.onrender.com/upload/pawan123", {
-        method: "POST",
-        body: formData
-      });
-
-      const data = await res.json();
-      document.getElementById("result").textContent = JSON.stringify(data, null, 2);
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
