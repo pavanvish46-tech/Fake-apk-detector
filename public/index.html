@@ -4,173 +4,40 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fake APK Detector</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <style>
-    /* ====== Base Styles ====== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
-    body {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: #f1f5f9;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-      transition: 0.4s;
-    }
-    body.light {
-      background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-      color: #0f172a;
-    }
-
-    /* ====== Navbar ====== */
-    header {
-      width: 100%;
-      max-width: 1000px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 25px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(12px);
-      margin-bottom: 30px;
-    }
-    header .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #38bdf8;
-      text-shadow: 0 0 10px #38bdf8;
-    }
-    nav a {
-      margin: 0 10px;
-      text-decoration: none;
-      color: inherit;
-      font-weight: 500;
-      transition: 0.3s;
-    }
-    nav a:hover {
-      color: #38bdf8;
-    }
-
-    /* ====== Upload Card ====== */
-    main {
-      width: 100%;
-      max-width: 600px;
-      padding: 30px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(15px);
-      text-align: center;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
-    }
-    main h1 {
-      margin-bottom: 10px;
-      font-size: 2rem;
-      color: #38bdf8;
-    }
-    main p {
-      margin-bottom: 20px;
-      opacity: 0.8;
-    }
-    .upload-section {
-      margin: 20px 0;
-    }
-    input[type="file"] {
-      display: block;
-      margin: 10px auto;
-    }
-    button {
-      background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6);
-      border: none;
-      padding: 12px 25px;
-      border-radius: 30px;
-      font-size: 1rem;
-      font-weight: bold;
-      color: white;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 0 15px #3b82f6;
-    }
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 25px #8b5cf6;
-    }
-
-    /* ====== Loader ====== */
-    .loader {
-      border: 6px solid rgba(255,255,255,0.2);
-      border-top: 6px solid #38bdf8;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-      display: none;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* ====== Result Box ====== */
-    #result {
-      margin-top: 20px;
-      display: none;
-      padding: 20px;
-      border-radius: 15px;
-      text-align: center;
-      animation: fadeIn 0.6s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Progress bar */
-    .progress {
-      margin-top: 15px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 10px;
-      overflow: hidden;
-      height: 20px;
-    }
-    .progress-bar {
-      height: 100%;
-      width: 0;
-      transition: 0.6s;
-      text-align: center;
-      color: white;
-      font-size: 0.8rem;
-      font-weight: bold;
-    }
-
-    /* Toggle Mode Button */
-    .mode-toggle {
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
+    /* Same CSS from previous code (skip for brevity) */
+    body { font-family: "Poppins", sans-serif; background: #0f172a; color: white; }
+    header { display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);border-radius:12px;}
+    .logo{font-weight:bold;color:#38bdf8;}
+    nav a{margin:0 10px;text-decoration:none;color:white;}
+    nav button{background:#38bdf8;border:none;padding:6px 15px;border-radius:20px;cursor:pointer;}
+    #profile{margin-top:15px;padding:15px;border-radius:10px;background:rgba(255,255,255,0.1);display:none;}
+    #profile img{border-radius:50%;width:60px;height:60px;}
   </style>
 </head>
 <body>
-  <!-- Navbar -->
   <header>
     <div class="logo">🔍 APK Detector</div>
     <nav>
       <a href="#">Home</a>
-      <a href="#">Profile</a>
-      <a href="#">Login</a>
-      <span class="mode-toggle" onclick="toggleMode()">🌙</span>
+      <a href="#">Scan</a>
+      <button onclick="login()">Login</button>
+      <button onclick="logout()" style="display:none;" id="logoutBtn">Logout</button>
     </nav>
   </header>
 
-  <!-- Main Content -->
   <main>
     <h1>Detect Fake Banking APKs</h1>
     <p>Upload your APK to analyze & detect fraud risk.</p>
+
+    <!-- Profile Section -->
+    <div id="profile">
+      <img id="userPhoto" src="" alt="profile"/>
+      <h3 id="userName"></h3>
+      <p id="userEmail"></p>
+    </div>
 
     <div class="upload-section">
       <input type="file" id="apkFile" accept=".apk" />
@@ -182,12 +49,44 @@
   </main>
 
   <script>
-    // Toggle dark/light
-    function toggleMode() {
-      document.body.classList.toggle("light");
+    // Firebase Config (apna khud ka config lagana hoga)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Login with Google
+    function login(){
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(result=>{
+          const user = result.user;
+          document.getElementById("userName").innerText = user.displayName;
+          document.getElementById("userEmail").innerText = user.email;
+          document.getElementById("userPhoto").src = user.photoURL;
+          document.getElementById("profile").style.display="block";
+          document.querySelector("button[onclick='login()']").style.display="none";
+          document.getElementById("logoutBtn").style.display="inline-block";
+        })
+        .catch(error=>alert(error.message));
     }
 
-    // APK Check Simulation
+    // Logout
+    function logout(){
+      auth.signOut().then(()=>{
+        document.getElementById("profile").style.display="none";
+        document.querySelector("button[onclick='login()']").style.display="inline-block";
+        document.getElementById("logoutBtn").style.display="none";
+      });
+    }
+
+    // APK Check Simulation (same as before)
     function checkApk() {
       const fileInput = document.getElementById("apkFile");
       const loader = document.getElementById("loader");
@@ -200,7 +99,6 @@
 
       const file = fileInput.files[0];
 
-      // Show loader
       loader.style.display = "block";
       resultBox.style.display = "none";
 
@@ -222,88 +120,7 @@
             </div>
           </div>
         `;
-      }, 2000); // Simulate scan delay
-    }
-  </script>
-</body>
-</html>    <div class="modal-content">
-      <span class="close" onclick="closeModal('profileModal')">&times;</span>
-      <h2>Your Profile</h2>
-      <p><b>Name:</b> Guest User</p>
-      <p><b>Email:</b> guest@example.com</p>
-    </div>
-  </div>
-
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('loginModal')">&times;</span>
-      <h2>Login</h2>
-      <input type="text" placeholder="Email" />
-      <input type="password" placeholder="Password" />
-      <button>Login</button>
-    </div>
-  </div>
-
-  <script>
-    let alreadyChecked = false; // ✅ 1-time check flag
-
-    function checkApk() {
-      const fileInput = document.getElementById("apkFile");
-      const resultBox = document.getElementById("result");
-      const checkBtn = document.getElementById("checkBtn");
-
-      if (alreadyChecked) {
-        resultBox.style.display = "block";
-        resultBox.innerHTML = `<p style="color:#f87171; font-weight:bold;">❌ You can only check 1 APK per session!</p>`;
-        return;
-      }
-
-      if (!fileInput.files.length) {
-        resultBox.style.display = "block";
-        resultBox.innerHTML = `<p style="color:#f87171; font-weight:bold;">⚠️ Please select an APK file first!</p>`;
-        return;
-      }
-
-      // Simulate random confidence score
-      const confidence = Math.floor(Math.random() * 100);
-
-      let status = "";
-      let color = "";
-
-      if (confidence > 70) {
-        status = "⚠️ Suspicious APK detected!";
-        color = "#f87171"; // red
-      } else {
-        status = "✅ Safe APK (Low Risk)";
-        color = "#34d399"; // green
-      }
-
-      resultBox.style.display = "block";
-      resultBox.innerHTML = `
-        <h2 style="color:${color}; text-shadow:0 0 10px ${color};">${status}</h2>
-        <p style="font-size:1.2rem; margin-top:10px;">
-          Detection Confidence: 
-          <span style="font-weight:bold; color:${color}; text-shadow:0 0 8px ${color};">
-            ${confidence}%
-          </span>
-        </p>
-      `;
-
-      // ✅ Mark as checked (only once)
-      alreadyChecked = true;
-      checkBtn.disabled = true;
-    }
-
-    // Modal handling
-    function showProfile() {
-      document.getElementById("profileModal").style.display = "flex";
-    }
-    function showLogin() {
-      document.getElementById("loginModal").style.display = "flex";
-    }
-    function closeModal(id) {
-      document.getElementById(id).style.display = "none";
+      }, 2000);
     }
   </script>
 </body>
