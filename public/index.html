@@ -4,6 +4,133 @@
   <meta charset="UTF-8">
   <title>🚀 APK Detector with Login</title>
   <link rel ="stylesheet" href = "style.css">
+<style>
+  /* ====== Base Styles ====== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+body {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  transition: 0.4s;
+}
+body.light {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  color: #0f172a;
+}
+
+/* ====== Page Containers ====== */
+h2 {
+  margin-bottom: 15px;
+  font-size: 1.8rem;
+  text-align: center;
+  color: #38bdf8;
+  text-shadow: 0 0 10px rgba(56,189,248,0.5);
+}
+.card {
+  width: 100%;
+  max-width: 450px;
+  padding: 25px;
+  margin: 15px auto;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+/* ====== Inputs ====== */
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.15);
+  color: inherit;
+  text-align: center;
+}
+input::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+/* ====== Buttons ====== */
+.btn {
+  background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6);
+  border: none;
+  padding: 12px 25px;
+  margin: 8px;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 0 15px #3b82f6;
+}
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px #8b5cf6;
+}
+
+/* ====== Loader ====== */
+#loader {
+  margin: 20px auto;
+  text-align: center;
+  display: none;
+  font-weight: bold;
+  color: #fbbf24;
+}
+
+/* ====== Result Box ====== */
+#result {
+  margin-top: 20px;
+  display: none;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  animation: fadeIn 0.6s ease-in-out;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ====== Progress Bar ====== */
+.progress {
+  margin-top: 15px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  height: 20px;
+}
+.progress-bar {
+  height: 100%;
+  width: 0;
+  transition: 0.6s;
+  text-align: center;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+/* ====== Hidden Utility ====== */
+.hidden {
+  display: none;
+}
+</style>
 </head>
 <body>
 
