@@ -1,89 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fake APK Detector</title>
-  <link rel="stylesheet", href="style.css">
+  <meta charset="UTF-8">
+  <title>🚀 APK Detector with Login</title>
+  <link rel ="stylesheet",href = "style.css">
 </head>
 <body>
-  <!-- Navbar -->
-  <header>
-    <div class="logo">🔍 APK Detector</div>
-    <nav>
-      <a href="#">Home</a>
-      <a href="#">Profile</a>
-      <a href="#">Login</a>
-      <span class="mode-toggle" onclick="toggleMode()">🌙</span>
-    </nav>
-  </header>
 
-  <!-- Main Content -->
-  <main>
-    <h1>Detect Fake Banking APKs</h1>
-    <p>Upload your APK to analyze & detect fraud risk.</p>
-
-    <div class="upload-section">
-      <input type="file" id="apkFile" accept=".apk" />
-      <button onclick="checkApk()">Check APK</button>
+  <!-- LOGIN PAGE -->
+  <div id="loginPage">
+    <h2>🔑 User Login</h2>
+    <div class="card">
+      <input type="text" id="username" placeholder="Enter Username"><br>
+      <input type="password" id="password" placeholder="Enter Password"><br>
+      <button class="btn" onclick="login()">Login</button>
     </div>
+  </div>
 
-    <div class="loader" id="loader"></div>
+  <!-- PROFILE PAGE -->
+  <div id="profilePage" class="hidden">
+    <h2>👤 Welcome, <span id="displayName"></span></h2>
+    <div class="card">
+      <p>This is your profile dashboard.</p>
+      <button class="btn" onclick="openScanner()">Go to APK Scanner</button>
+      <button class="btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- APK SCANNER PAGE -->
+  <div id="scannerPage" class="hidden">
+    <h2>🚀 Fake Banking APK Detector</h2>
+    <input type="file" id="apkFile" accept=".apk" /><br><br>
+    <button class="btn" onclick="checkApk()">Upload & Analyze</button>
+    <div id="loader">⏳ Scanning APK... Please wait...</div>
     <div id="result"></div>
-  </main>
+    <br>
+    <button class="btn" onclick="backToProfile()">⬅ Back to Profile</button>
+  </div>
 
   <script>
-  let alreadyChecked = false; // ✅ Flag for one-time check
+    let alreadyChecked = false;
 
-  // Toggle dark/light
-  function toggleMode() {
-    document.body.classList.toggle("light");
-  }
+    // Simple Login Function
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
 
-  // APK Check Simulation (Only Once)
-  function checkApk() {
-    if (alreadyChecked) {
-      alert("⚠️ APK already checked! You can scan only once.");
-      return;
+      if (user === "" || pass === "") {
+        alert("⚠️ Please fill username and password");
+        return;
+      }
+
+      // Fake login check
+      if (pass === "12345") {
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("profilePage").classList.remove("hidden");
+        document.getElementById("displayName").innerText = user;
+      } else {
+        alert("❌ Wrong Password! (Hint: 12345)");
+      }
     }
 
-    const fileInput = document.getElementById("apkFile");
-    const loader = document.getElementById("loader");
-    const resultBox = document.getElementById("result");
-
-    if (!fileInput.files.length) {
-      alert("⚠️ Please select an APK file first!");
-      return;
+    // Logout
+    function logout() {
+      document.getElementById("profilePage").classList.add("hidden");
+      document.getElementById("scannerPage").classList.add("hidden");
+      document.getElementById("loginPage").classList.remove("hidden");
+      alreadyChecked = false;
     }
 
-    const file = fileInput.files[0];
+    // Open Scanner
+    function openScanner() {
+      document.getElementById("profilePage").classList.add("hidden");
+      document.getElementById("scannerPage").classList.remove("hidden");
+    }
 
-    // Show loader
-    loader.style.display = "block";
-    resultBox.style.display = "none";
+    // Back to Profile
+    function backToProfile() {
+      document.getElementById("scannerPage").classList.add("hidden");
+      document.getElementById("profilePage").classList.remove("hidden");
+    }
 
-    setTimeout(() => {
-      loader.style.display = "none";
+    // APK Check
+    function checkApk() {
+      if (alreadyChecked) {
+        alert("⚠️ APK already checked! You can scan only once.");
+        return;
+      }
 
-      const confidence = Math.floor(Math.random() * 100);
-      let status = confidence > 70 ? "⚠️ Suspicious APK detected!" : "✅ Safe APK (Low Risk)";
-      let color = confidence > 70 ? "#f87171" : "#34d399";
+      const fileInput = document.getElementById("apkFile");
+      const loader = document.getElementById("loader");
+      const resultBox = document.getElementById("result");
 
-      resultBox.style.display = "block";
-      resultBox.style.background = "rgba(255,255,255,0.1)";
-      resultBox.innerHTML = `
-        <h2 style="color:${color};">${status}</h2>
-        <p><b>File:</b> ${file.name} (${(file.size/1024).toFixed(2)} KB)</p>
-        <div class="progress">
-          <div class="progress-bar" style="background:${color}; width:${confidence}%;">
-            ${confidence}%
+      if (!fileInput.files.length) {
+        alert("⚠️ Please select an APK file first!");
+        return;
+      }
+
+      const file = fileInput.files[0];
+
+      loader.style.display = "block";
+      resultBox.style.display = "none";
+
+      setTimeout(() => {
+        loader.style.display = "none";
+
+        const confidence = Math.floor(Math.random() * 100);
+        let status = confidence > 70 ? "⚠️ Suspicious APK detected!" : "✅ Safe APK (Low Risk)";
+        let color = confidence > 70 ? "#f87171" : "#34d399";
+
+        resultBox.style.display = "block";
+        resultBox.style.background = "rgba(255,255,255,0.1)";
+        resultBox.innerHTML = `
+          <h2 style="color:${color};">${status}</h2>
+          <p><b>File:</b> ${file.name} (${(file.size/1024).toFixed(2)} KB)</p>
+          <div class="progress">
+            <div class="progress-bar" style="background:${color}; width:${confidence}%;">
+              ${confidence}%
+            </div>
           </div>
-        </div>
-      `;
+        `;
 
-      alreadyChecked = true; // ✅ Only one scan allowed
-    }, 2000); // Simulate scan delay
-  }
+        alreadyChecked = true;
+      }, 2000);
+    }
   </script>
+
 </body>
 </html>
