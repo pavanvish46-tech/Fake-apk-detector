@@ -50,4 +50,4 @@
       alreadyChecked = true; // ✅ Only one scan allowed
     }, 2000); // Simulate scan delay
   }
-</script>
+  </script>
