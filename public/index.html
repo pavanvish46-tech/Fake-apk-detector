@@ -3,134 +3,183 @@
 <head>
   <meta charset="UTF-8">
   <title>🚀 APK Detector with Login</title>
-  <link rel ="stylesheet" href = "style.css">
-<style>
-  /* ====== Base Styles ====== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
-}
-body {
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  color: #f1f5f9;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-  transition: 0.4s;
-}
-body.light {
-  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-  color: #0f172a;
-}
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ====== Base Styles ====== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      transition: 0.4s;
+    }
+    body.light {
+      background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+      color: #0f172a;
+    }
 
-/* ====== Page Containers ====== */
-h2 {
-  margin-bottom: 15px;
-  font-size: 1.8rem;
-  text-align: center;
-  color: #38bdf8;
-  text-shadow: 0 0 10px rgba(56,189,248,0.5);
-}
-.card {
-  width: 100%;
-  max-width: 450px;
-  padding: 25px;
-  margin: 15px auto;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  text-align: center;
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
-}
+    h2 {
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+      text-align: center;
+      color: #38bdf8;
+      text-shadow: 0 0 10px rgba(56,189,248,0.5);
+    }
 
-/* ====== Inputs ====== */
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 12px;
-  border: none;
-  outline: none;
-  font-size: 1rem;
-  background: rgba(255,255,255,0.15);
-  color: inherit;
-  text-align: center;
-}
-input::placeholder {
-  color: rgba(255,255,255,0.6);
-}
+    /* ====== Card with glowing effect ====== */
+    .card {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      width: 100%;
+      max-width: 450px;
+      padding: 25px;
+      margin: 15px auto;
+      border-radius: 20px;
+      text-align: center;
+    }
 
-/* ====== Buttons ====== */
-.btn {
-  background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6);
-  border: none;
-  padding: 12px 25px;
-  margin: 8px;
-  border-radius: 30px;
-  font-size: 1rem;
-  font-weight: bold;
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
-  box-shadow: 0 0 15px #3b82f6;
-}
-.btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 25px #8b5cf6;
-}
+    .card::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 15px 50px #008);
+      border-radius: 20px;
+      animation: rotating 4s linear infinite;
+      background: conic-gradient(#06b6d4, #3b82f6, #8b5cf6, #06b6d4);
+      top: 0;
+      left: 0;
+      z-index: -2;
+    }
 
-/* ====== Loader ====== */
-#loader {
-  margin: 20px auto;
-  text-align: center;
-  display: none;
-  font-weight: bold;
-  color: #fbbf24;
-}
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      background: #202039;
+      border-radius: 15px;
+      border: 8px solid #252525;
+      z-index: -1;
+    }
 
-/* ====== Result Box ====== */
-#result {
-  margin-top: 20px;
-  display: none;
-  padding: 20px;
-  border-radius: 15px;
-  text-align: center;
-  animation: fadeIn 0.6s ease-in-out;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(10px);
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    /* ====== Inputs ====== */
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.15);
+      color: inherit;
+      text-align: center;
+    }
+    input::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
 
-/* ====== Progress Bar ====== */
-.progress {
-  margin-top: 15px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 10px;
-  overflow: hidden;
-  height: 20px;
-}
-.progress-bar {
-  height: 100%;
-  width: 0;
-  transition: 0.6s;
-  text-align: center;
-  color: white;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
+    /* ====== Buttons with glowing effect ====== */
+    .btn {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      border: none;
+      padding: 12px 25px;
+      margin: 8px;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+      background: transparent;
+    }
 
-/* ====== Hidden Utility ====== */
-.hidden {
-  display: none;
-}
-</style>
+    .btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 30px;
+      background: conic-gradient(#06b6d4, #3b82f6, #8b5cf6, #06b6d4);
+      animation: rotating 3s linear infinite;
+      z-index: -2;
+    }
+
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: 28px;
+      background: #202039;
+      z-index: -1;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* ====== Loader ====== */
+    #loader {
+      margin: 20px auto;
+      text-align: center;
+      display: none;
+      font-weight: bold;
+      color: #fbbf24;
+    }
+
+    /* ====== Result Box ====== */
+    #result {
+      margin-top: 20px;
+      display: none;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      animation: fadeIn 0.6s ease-in-out;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ====== Progress Bar ====== */
+    .progress {
+      margin-top: 15px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      height: 20px;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      transition: 0.6s;
+      text-align: center;
+      color: white;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .hidden { display: none; }
+
+    /* Rotating animation */
+    @keyframes rotating {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
 
@@ -157,28 +206,26 @@ input::placeholder {
   <!-- APK SCANNER PAGE -->
   <div id="scannerPage" class="hidden">
     <h2>🚀 Fake Banking APK Detector</h2>
-    <input type="file" id="apkFile" accept=".apk" /><br><br>
-    <button class="btn" onclick="checkApk()">Upload & Analyze</button>
-    <div id="loader">⏳ Scanning APK... Please wait...</div>
-    <div id="result"></div>
-    <br>
-    <button class="btn" onclick="backToProfile()">⬅ Back to Profile</button>
+    <div class="card">
+      <input type="file" id="apkFile" accept=".apk" /><br><br>
+      <button class="btn" onclick="checkApk()">Upload & Analyze</button>
+      <div id="loader">⏳ Scanning APK... Please wait...</div>
+      <div id="result"></div>
+      <br>
+      <button class="btn" onclick="backToProfile()">⬅ Back to Profile</button>
+    </div>
   </div>
 
   <script>
     let alreadyChecked = false;
 
-    // Simple Login Function
     function login() {
       const user = document.getElementById("username").value;
       const pass = document.getElementById("password").value;
-
       if (user === "" || pass === "") {
         alert("⚠️ Please fill username and password");
         return;
       }
-
-      // Fake login check
       if (pass === "12345") {
         document.getElementById("loginPage").classList.add("hidden");
         document.getElementById("profilePage").classList.remove("hidden");
@@ -188,7 +235,6 @@ input::placeholder {
       }
     }
 
-    // Logout
     function logout() {
       document.getElementById("profilePage").classList.add("hidden");
       document.getElementById("scannerPage").classList.add("hidden");
@@ -196,25 +242,21 @@ input::placeholder {
       alreadyChecked = false;
     }
 
-    // Open Scanner
     function openScanner() {
       document.getElementById("profilePage").classList.add("hidden");
       document.getElementById("scannerPage").classList.remove("hidden");
     }
 
-    // Back to Profile
     function backToProfile() {
       document.getElementById("scannerPage").classList.add("hidden");
       document.getElementById("profilePage").classList.remove("hidden");
     }
 
-    // APK Check
     function checkApk() {
       if (alreadyChecked) {
         alert("⚠️ APK already checked! You can scan only once.");
         return;
       }
-
       const fileInput = document.getElementById("apkFile");
       const loader = document.getElementById("loader");
       const resultBox = document.getElementById("result");
@@ -225,19 +267,16 @@ input::placeholder {
       }
 
       const file = fileInput.files[0];
-
       loader.style.display = "block";
       resultBox.style.display = "none";
 
       setTimeout(() => {
         loader.style.display = "none";
-
         const confidence = Math.floor(Math.random() * 100);
         let status = confidence > 70 ? "⚠️ Suspicious APK detected!" : "✅ Safe APK (Low Risk)";
         let color = confidence > 70 ? "#f87171" : "#34d399";
 
         resultBox.style.display = "block";
-        resultBox.style.background = "rgba(255,255,255,0.1)";
         resultBox.innerHTML = `
           <h2 style="color:${color};">${status}</h2>
           <p><b>File:</b> ${file.name} (${(file.size/1024).toFixed(2)} KB)</p>
@@ -247,11 +286,9 @@ input::placeholder {
             </div>
           </div>
         `;
-
         alreadyChecked = true;
       }, 2000);
     }
   </script>
-
 </body>
 </html>
